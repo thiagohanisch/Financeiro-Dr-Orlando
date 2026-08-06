@@ -1,0 +1,10 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "fintrack": {
+      ".read": "auth != null && auth.uid === 'cGxAW4FrEXUklphYlJDxQVxuFyB3'",
+      ".write": "auth != null && auth.uid === 'cGxAW4FrEXUklphYlJDxQVxuFyB3'"
+    }
+  }
+}
