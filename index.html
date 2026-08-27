@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>FinTrack</title>
+<title>FinTrack V4</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
@@ -1172,6 +1172,14 @@ const PROFILE_EMAIL_PREFIXES={thiago:'thiagohanisch',luiza:'lcarn'};
 const SOLO_AUTHORIZED_EMAILS=new Set(['orlando20003am@gmail.com']);
 
 let firebaseApp=null,auth=null,realtimeDb=null;
+
+// V4: referência global definida ANTES do listener de autenticação.
+// Isso evita o erro "soloUserRoot is not defined" em qualquer ordem de inicialização/cache.
+window.soloUserRoot = function soloUserRoot(){
+  if(!realtimeDb) throw new Error('Firebase ainda não foi inicializado.');
+  return realtimeDb.ref('fintrack');
+};
+var soloUserRoot = window.soloUserRoot;
 let _authReady=false,_cloudLoaded=false,_appOpening=false,_syncTimer=null,_syncInProgress=false,_syncPending=false,_suppressAutoSync=false,_cloudWriteQueue=Promise.resolve();
 let _cloudTxMap={},_localDirtyIds=new Set(),_localDeletedIds=new Set(),_transactionsListener=null;
 
@@ -2536,12 +2544,6 @@ function firebaseSafeKey(value){
   return String(value ?? '').replace(/[.#$\[\]\/]/g,'_');
 }
 
-// Raiz única do banco na versão SOLO.
-// Esta função era chamada em vários pontos, mas não existia no arquivo original.
-function soloUserRoot(){
-  if(!realtimeDb)throw new Error('Firebase ainda não foi inicializado.');
-  return realtimeDb.ref('fintrack');
-}
 
 function txArrayToMap(txs){
   const map={};
