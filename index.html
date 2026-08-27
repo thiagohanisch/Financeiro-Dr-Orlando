@@ -1168,6 +1168,8 @@ const FIREBASE_CONFIG={
 // Associação automática das duas contas já criadas no Firebase Authentication.
 // O sistema reconhece Usuário pelo início do e-mail e atribui a outra conta autorizada à .
 const PROFILE_EMAIL_PREFIXES={thiago:'thiagohanisch',luiza:'lcarn'};
+// Conta autorizada nesta versão SOLO. A senha nunca deve ser gravada no HTML.
+const SOLO_AUTHORIZED_EMAILS=new Set(['orlando20003am@gmail.com']);
 
 let firebaseApp=null,auth=null,realtimeDb=null;
 let _authReady=false,_cloudLoaded=false,_appOpening=false,_syncTimer=null,_syncInProgress=false,_syncPending=false,_suppressAutoSync=false,_cloudWriteQueue=Promise.resolve();
@@ -1179,6 +1181,9 @@ function firebaseConfigured(){
 function normalizeEmail(v){return String(v||'').trim().toLowerCase()}
 function profileFromUser(user){
   const email=normalizeEmail(user?.email);
+  // No modo SOLO, a conta explicitamente autorizada usa o perfil interno 'thiago'
+  // (o restante do sistema já usa esse identificador como perfil único).
+  if(SOLO_AUTHORIZED_EMAILS.has(email))return'thiago';
   const local=email.split('@')[0];
   if(local.startsWith(PROFILE_EMAIL_PREFIXES.thiago))return'thiago';
   if(local.startsWith(PROFILE_EMAIL_PREFIXES.luiza))return'thiago';
@@ -1246,6 +1251,9 @@ async function handleAuthenticatedUser(user){
       showLogin();setLoginError('Esta conta não está autorizada neste FinTrack.');return;
     }
     _currentProfile=profile;_viewOwner=profile;
+    // Garante que o cache local e a fila de alterações pendentes estejam carregados
+    // antes de baixar o Firebase. Evita uma corrida ao abrir uma nova sessão.
+    if(window._fintrackLocalReady)await window._fintrackLocalReady;
     const sub=document.getElementById('lock-sub');if(sub)sub.textContent='Sincronizando seus dados...';
     const btn=document.getElementById('login-btn');if(btn){btn.disabled=true;btn.textContent='Carregando...'}
     await ensureSoloUserData();
@@ -1273,7 +1281,7 @@ function initFirebase(){
 }
 
 // ===================== STORAGE =====================
-const DB_KEY='fintrack_v2',CATS_KEY='fintrack_cats_v2',IMP_KEY='fintrack_imports';
+const DB_KEY='fintrack_v2',CATS_KEY='fintrack_cats_v2',IMP_KEY='fintrack_imports',PENDING_KEY='fintrack_pending_sync_v2';
 const store={
   async get(k){if(window.storage){try{const r=await window.storage.get(k);return r?r.value:null}catch{}}return localStorage.getItem(k)},
   async set(k,v){if(window.storage){try{await window.storage.set(k,v);return}catch{}}localStorage.setItem(k,v)}
@@ -1369,10 +1377,17 @@ let _db={transactions:[]},_cats=JSON.parse(JSON.stringify(DEFAULT_CATS)),_import
 
 async function loadAll(){
   try{
-    const[dbR,catsR,impsR]=await Promise.all([store.get(DB_KEY),store.get(CATS_KEY),store.get(IMP_KEY)]);
+    const[dbR,catsR,impsR,pendingR]=await Promise.all([store.get(DB_KEY),store.get(CATS_KEY),store.get(IMP_KEY),store.get(PENDING_KEY)]);
     _db=dbR?JSON.parse(dbR):{transactions:[]};
     _cats=catsR?JSON.parse(catsR):JSON.parse(JSON.stringify(DEFAULT_CATS));
     _imports=impsR?JSON.parse(impsR):[];
+    if(pendingR){
+      try{
+        const pending=JSON.parse(pendingR);
+        _localDirtyIds=new Set((pending.dirty||[]).map(String));
+        _localDeletedIds=new Set((pending.deleted||[]).map(String));
+      }catch{}
+    }
     await migrateDoacaoToExpense();
     await migrateOwnerField();
   }catch{}
@@ -1419,8 +1434,19 @@ async function saveCats(c){
     try{await syncToCloud(false)}catch(err){logCloud('⚠ Categoria salva localmente; aguardando Firebase: '+err.message);scheduleAutoSync()}
   }else scheduleAutoSync();
 }
+async function persistPendingSyncState(){
+  await store.set(PENDING_KEY,JSON.stringify({dirty:[..._localDirtyIds],deleted:[..._localDeletedIds]}));
+}
 async function saveDB(db){
-  const previous=new Map((_db?.transactions||[]).map(t=>[String(t.id),JSON.stringify(t)]));
+  // Compara com a última versão realmente persistida, e não com _db em memória.
+  // Várias telas alteram o objeto retornado por loadDB() antes de chamar saveDB();
+  // comparar com _db fazia a alteração parecer inexistente e ela nunca ia ao Firebase.
+  let persisted={transactions:[]};
+  try{
+    const raw=await store.get(DB_KEY);
+    if(raw)persisted=JSON.parse(raw);
+  }catch{}
+  const previous=new Map((persisted?.transactions||[]).map(t=>[String(t.id),JSON.stringify(t)]));
   const next=new Map((db?.transactions||[]).map(t=>[String(t.id),JSON.stringify(t)]));
 
   if(!_suppressAutoSync){
@@ -1440,6 +1466,7 @@ async function saveDB(db){
 
   _db=db;
   await store.set(DB_KEY,JSON.stringify(db));
+  if(!_suppressAutoSync)await persistPendingSyncState();
 }
 async function saveImports(a){
   _imports=a;
@@ -2509,6 +2536,13 @@ function firebaseSafeKey(value){
   return String(value ?? '').replace(/[.#$\[\]\/]/g,'_');
 }
 
+// Raiz única do banco na versão SOLO.
+// Esta função era chamada em vários pontos, mas não existia no arquivo original.
+function soloUserRoot(){
+  if(!realtimeDb)throw new Error('Firebase ainda não foi inicializado.');
+  return realtimeDb.ref('fintrack');
+}
+
 function txArrayToMap(txs){
   const map={};
   (txs||[]).forEach(t=>{if(t?.id!=null)map[String(t.id)]=t});
@@ -2569,6 +2603,7 @@ async function syncToCloud(showFeedback=false){
         updated:firebase.database.ServerValue.TIMESTAMP,
         updatedBy:uid
       });
+      await persistPendingSyncState();
 
       _lastCloudSyncAt=Date.now();
       logCloud('✓ Firebase confirmado às '+new Date().toLocaleTimeString('pt-BR'));
@@ -3562,13 +3597,15 @@ function toggleMonthlyDetail(){
 
 // ===================== INIT =====================
 (function bootFinTrack(){
-  // Inicializa o Firebase imediatamente para que o botão de login já funcione.
+  // Inicia primeiro a leitura do cache local e expõe uma promessa para a autenticação.
+  // Assim o Firebase nunca sobrescreve dados locais pendentes antes de eles serem lidos.
+  window._fintrackLocalReady=loadAll().then(()=>populateAllSelects()).catch(err=>{
+    console.error('Falha ao carregar cache local:',err);
+  });
   try{initFirebase()}catch(err){
     showLogin();
     setLoginError('Falha ao iniciar o Firebase: '+(err?.message||err));
   }
-  // Carrega o cache local em paralelo, sem bloquear a autenticação.
-  loadAll().then(()=>populateAllSelects()).catch(err=>console.error('Falha ao carregar cache local:',err));
   const form=document.getElementById('firebase-login-form');
   if(form){
     form.addEventListener('submit',loginWithFirebase);
