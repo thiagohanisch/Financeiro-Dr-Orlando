@@ -166,14 +166,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .insight-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
 .insight-value{font-size:20px;font-weight:600;font-family:'DM Mono',monospace}
 .insight-sub{font-size:11px;color:var(--text2);margin-top:4px}
-.ins-detail-section{margin-top:8px}
-.ins-detail-title{font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
-.ins-detail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 14px}
-.ins-detail-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 11px;min-width:0}
-.ins-detail-item .rank-row{border-bottom:none;padding:0}
-@media(max-width:1024px){.ins-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:640px){.ins-detail-grid{grid-template-columns:1fr}}
-
 /* Patrimônio */
 .pat-input-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px}
 .pat-field{display:flex;flex-direction:column;gap:5px}
@@ -267,14 +259,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="lock-card">
     <div class="lock-logo">💰</div>
     <div class="lock-title">FinTrack</div>
-    <div class="lock-sub" id="lock-sub">Acesso individual seguro</div>
+    <div class="lock-sub" id="lock-sub">Entre com sua conta autorizada</div>
     <form id="firebase-login-form" onsubmit="loginWithFirebase(event)">
       <input class="form-input" id="login-email" type="email" autocomplete="username" placeholder="E-mail" required style="margin-bottom:10px;padding:12px 14px">
       <input class="form-input" id="login-password" type="password" autocomplete="current-password" placeholder="Senha" required style="padding:12px 14px">
       <button class="lock-btn" id="login-btn" type="button" onclick="loginWithFirebase(event)">Entrar</button>
     </form>
     <button type="button" onclick="resetFirebasePassword()" style="margin-top:12px;background:none;border:none;color:var(--blue);font-size:12px;cursor:pointer">Esqueci minha senha</button>
-    <div class="lock-err" id="lock-err"></div><div style="font-size:10px;color:var(--text3);margin-top:4px">Versão individual Firebase</div>
+    <div class="lock-err" id="lock-err"></div>
     <div id="firebase-config-help" style="display:none;margin-top:14px;font-size:11px;color:var(--amber);text-align:left;line-height:1.5"></div>
   </div>
 </div>
@@ -285,10 +277,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="logo"><div class="logo-icon">💰</div><span>FinTrack</span></div>
 
   <div style="padding:0 14px 14px;border-bottom:1px solid var(--border);margin-bottom:10px">
-    <div style="font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Conta conectada</div>
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-      <span id="profile-badge" style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</span>
-      <a href="#" onclick="logoutProfile();return false" style="font-size:11px;color:var(--blue);text-decoration:none;flex-shrink:0">Sair</a>
+    <div style="font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Logado como</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <span id="profile-badge" style="font-size:13px;font-weight:500">—</span>
+      <a href="#" onclick="logoutProfile();return false" style="font-size:11px;color:var(--blue);text-decoration:none">Trocar</a>
+    </div>
+    <div style="font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Visualizando</div>
+    <div style="display:flex;gap:5px" id="view-switcher">
+      <div class="view-chip" id="view-thiago" onclick="setViewOwner('thiago')" style="flex:1;text-align:center;padding:6px 4px;border-radius:7px;font-size:11px;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text2)">Usuário</div>
+      <div class="view-chip" id="view-luiza" onclick="setViewOwner('thiago')" style="flex:1;text-align:center;padding:6px 4px;border-radius:7px;font-size:11px;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text2)"></div>
+      <div class="view-chip" id="view-casal" onclick="setViewOwner('thiago')" style="flex:1;text-align:center;padding:6px 4px;border-radius:7px;font-size:11px;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text2)">Casal</div>
     </div>
   </div>
 
@@ -327,6 +325,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="card"><div class="card-label">Despesas</div><div class="card-value" id="c-expense" style="color:var(--red)">R$ 0</div><div class="card-sub" id="c-expense-count">—</div></div>
     <div class="card"><div class="card-label">Saldo do mês</div><div class="card-value" id="c-balance">R$ 0</div><div class="card-sub" id="c-balance-pct">—</div></div>
     <div class="card"><div class="card-label">Maior gasto</div><div class="card-value" id="c-topcat" style="font-size:14px;padding-top:4px;color:var(--amber)">—</div><div class="card-sub" id="c-topcat-amt">—</div></div>
+  </div>
+  <div class="chart-card" style="margin-bottom:18px">
+    <div class="chart-header"><div class="chart-title">⚖️ Balanço do casal — quem pagou os gastos compartilhados</div></div>
+    <div id="balance-card-body" style="font-size:13px;color:var(--text2)">—</div>
   </div>
   <div class="content-grid">
     <div class="chart-card">
@@ -515,18 +517,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div id="ins-rank-income"></div>
     </div>
   </div>
-  <div class="chart-card" style="margin-bottom:18px">
-    <div class="chart-header"><div class="chart-title">% de gasto por categoria</div></div>
-    <div style="position:relative;height:280px"><canvas id="chart-ins-cat"></canvas></div>
-  </div>
-  <div class="chart-card">
-    <div class="chart-header">
-      <div>
-        <div class="chart-title">Detalhamento por categoria</div>
-        <div style="font-size:10.5px;color:var(--text3);margin-top:2px">Categorias distribuídas em colunas para facilitar a leitura</div>
-      </div>
+  <div class="content-grid">
+    <div class="chart-card">
+      <div class="chart-header"><div class="chart-title">% de gasto por categoria</div></div>
+      <div style="position:relative;height:260px"><canvas id="chart-ins-cat"></canvas></div>
     </div>
-    <div id="ins-cat-detail"></div>
+    <div class="chart-card">
+      <div class="chart-header"><div class="chart-title">Detalhamento por categoria</div></div>
+      <div id="ins-cat-detail"></div>
+    </div>
   </div>
 </section>
 
@@ -567,7 +566,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
   <div class="chart-card" style="margin-bottom:18px">
     <div class="chart-header">
-      <div><div class="chart-title">Mensal — Receitas vs Despesas</div><div style="font-size:10.5px;color:var(--text3);margin-top:2px">Receitas em verde e despesas em vermelho; visão consolidada da conta</div></div>
+      <div><div class="chart-title">Mensal — Receitas vs Despesas</div><div style="font-size:10.5px;color:var(--text3);margin-top:2px">Receitas: tons vivos · Despesas: tons escuros e borda reforçada</div></div>
       <div class="legend"><span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Receitas</span><span class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>Despesas</span><span class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span>Saldo</span></div>
     </div>
     <div style="position:relative;height:260px"><canvas id="chart-anual"></canvas></div>
@@ -615,7 +614,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
         <div><div style="font-size:14px;font-weight:500" id="import-filename">—</div><div style="font-size:12px;color:var(--text2);margin-top:2px" id="import-fileinfo">—</div></div>
         <div style="display:flex;gap:8px;align-items:center">
-          <input type="hidden" id="imp-owner" value="usuario"><span style="font-size:12px;color:var(--text2)">Importar para esta conta</span>
+          <select class="form-select" id="imp-owner" style="width:auto"><option value="thiago">Importar como: Usuário</option><option value="thiago">Importar como: </option></select>
           <button class="btn" onclick="resetImport()">✕ Cancelar</button><button class="btn btn-primary" id="btn-confirm-import" onclick="confirmImport()">✓ Importar</button>
         </div>
       </div>
@@ -643,7 +642,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="chart-card" style="margin-bottom:18px">
     <div style="font-size:14px;font-weight:500;margin-bottom:16px">Filtros de exportação</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px">
-      <input type="hidden" id="exp-owner" value="usuario">
+      <div><div class="form-label">De quem</div><select class="form-select" id="exp-owner" onchange="renderExportSection()"><option value="ambos">Ambos</option><option value="thiago">Usuário</option><option value="thiago"></option></select></div>
       <div><div class="form-label">Mês</div><select class="form-select" id="exp-month"><option value="-1">Todos os meses</option></select></div>
       <div><div class="form-label">Ano</div><select class="form-select" id="exp-year"></select></div>
       <div><div class="form-label">Tipo</div><select class="form-select" id="exp-type"><option value="all">Todos</option><option value="expense">Apenas Despesas</option><option value="income">Apenas Receitas</option></select></div>
@@ -944,7 +943,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <input type="hidden" id="f-cat">
     </div>
     <!-- Compartilhado -->
-    <div class="form-row" style="display:none" id="f-shared-row">
+    <div class="form-row" style="margin-top:4px" id="f-shared-row">
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2)">
         <input type="checkbox" id="f-shared" onchange="toggleShared()" style="accent-color:var(--green)">
         🤝 Compartilhado com <span id="f-shared-partner-name"></span>
@@ -1070,7 +1069,7 @@ function transactionsForChartPoint(chart,elements){
     if(dsLabel.includes('receita'))type='income';
     if(dsLabel.includes('despesa'))type='expense';
     if(dsLabel.includes('thiago'))txs=txs.filter(t=>t.owner==='thiago');
-    if(dsLabel.includes('luiza'))txs=txs.filter(t=>t.owner==='luiza');
+    if(dsLabel.includes('thiago'))txs=txs.filter(t=>t.owner==='thiago');
   }else if(canvasId==='chart-pie'){
     month=parseInt(document.getElementById('dash-month')?.value);
     year=parseInt(document.getElementById('dash-year')?.value);
@@ -1093,7 +1092,7 @@ function transactionsForChartPoint(chart,elements){
     category=document.getElementById('cat-anual-sel')?.value;
     const dsLabel=String(chart.data.datasets?.[point.datasetIndex]?.label||'').toLowerCase();
     if(dsLabel.includes('thiago'))txs=txs.filter(t=>t.owner==='thiago');
-    if(dsLabel.includes('luiza'))txs=txs.filter(t=>t.owner==='luiza');
+    if(dsLabel.includes('thiago'))txs=txs.filter(t=>t.owner==='thiago');
   }else if(canvasId==='chart-comparativo'){
     month=index;
     year=parseInt(document.getElementById('cmp-year')?.value)||new Date().getFullYear();
@@ -1133,7 +1132,7 @@ function openChartSummary(chart,elements){
           <div style="font-size:11px;color:var(--text2)">${d.toLocaleDateString('pt-BR')}</div>
           <div>
             <div style="font-size:13px;font-weight:500">${t.description}</div>
-            <div style="font-size:10.5px;color:var(--text3)">${cat.icon} ${cat.name}${t.recurring?' · recorrente':''}</div>
+            <div style="font-size:10.5px;color:var(--text3)">${cat.icon} ${cat.name} · ${profileName(t.owner)}${t.shared?' · compartilhado':''}${t.recurring?' · recorrente':''}</div>
           </div>
           <div style="text-align:right;font-family:'DM Mono',monospace;color:${t.type==='expense'?'var(--red)':'var(--green)'}">${t.type==='expense'?'−':'+'}${fmt(t.amount)}</div>
         </div>`;
@@ -1157,28 +1156,34 @@ Chart.register(chartClickSummaryPlugin);
 // PREENCHA os campos abaixo com os dados do aplicativo Web do Firebase.
 // Firebase Console > Configurações do projeto > Seus apps > App Web > Configuração do SDK.
 const FIREBASE_CONFIG={
-  apiKey:'AIzaSyDT6J0N5L8yvKuCj9D2uDvtM0XOSc-Odqw',
-  authDomain:'planilha-financeira-orlando.firebaseapp.com',
-  databaseURL:'https://planilha-financeira-orlando-default-rtdb.firebaseio.com',
-  projectId:'planilha-financeira-orlando',
-  storageBucket:'planilha-financeira-orlando.firebasestorage.app',
-  messagingSenderId:'943991994737',
-  appId:'1:943991994737:web:f833af67c4c3445d859ed0',
-  measurementId:'G-GZN408Z5XD'
+  apiKey:'AIzaSyAW0OzhiBe5BPK0-a1su1fo6QRIbEsFSok',
+  authDomain:'planilha-financeira-a4310.firebaseapp.com',
+  databaseURL:'https://planilha-financeira-a4310-default-rtdb.firebaseio.com',
+  projectId:'planilha-financeira-a4310',
+  storageBucket:'planilha-financeira-a4310.firebasestorage.app',
+  messagingSenderId:'695350907660',
+  appId:'1:695350907660:web:6b1e8d17b2a94b25826f29'
 };
-const AUTHORIZED_UID='cGxAW4FrEXUklphYlJDxQVxuFyB3';
 
-// Aplicação individual: somente o UID autorizado pode acessar.
+// Associação automática das duas contas já criadas no Firebase Authentication.
+// O sistema reconhece Usuário pelo início do e-mail e atribui a outra conta autorizada à .
+const PROFILE_EMAIL_PREFIXES={thiago:'thiagohanisch',luiza:'lcarn'};
 
 let firebaseApp=null,auth=null,realtimeDb=null;
-let _authReady=false,_cloudLoaded=false,_appOpening=false,_syncTimer=null,_syncInProgress=false,_syncPending=false,_suppressAutoSync=false;
+let _authReady=false,_cloudLoaded=false,_appOpening=false,_syncTimer=null,_syncInProgress=false,_syncPending=false,_suppressAutoSync=false,_cloudWriteQueue=Promise.resolve();
 let _cloudTxMap={},_localDirtyIds=new Set(),_localDeletedIds=new Set(),_transactionsListener=null;
 
 function firebaseConfigured(){
   return !Object.values(FIREBASE_CONFIG).some(v=>String(v).includes('COLE_AQUI'));
 }
 function normalizeEmail(v){return String(v||'').trim().toLowerCase()}
-function profileFromUser(user){return user?.uid===AUTHORIZED_UID?'usuario':null;}
+function profileFromUser(user){
+  const email=normalizeEmail(user?.email);
+  const local=email.split('@')[0];
+  if(local.startsWith(PROFILE_EMAIL_PREFIXES.thiago))return'thiago';
+  if(local.startsWith(PROFILE_EMAIL_PREFIXES.luiza))return'thiago';
+  return null;
+}
 function setLoginError(msg){const el=document.getElementById('lock-err');if(el)el.textContent=msg||''}
 function showLogin(){
   document.getElementById('app-root').style.display='none';
@@ -1229,7 +1234,7 @@ async function logoutProfile(){
     _transactionsListener=null;
     if(auth)await auth.signOut();
   }catch{}
-  _currentProfile='usuario';_viewOwner='usuario';_cloudLoaded=false;
+  _currentProfile=null;_viewOwner='thiago';_cloudLoaded=false;
   showLogin();setLoginError('');
 }
 async function handleAuthenticatedUser(user){
@@ -1240,12 +1245,14 @@ async function handleAuthenticatedUser(user){
       await auth.signOut();
       showLogin();setLoginError('Esta conta não está autorizada neste FinTrack.');return;
     }
-    _currentProfile='usuario';_viewOwner='usuario';
+    _currentProfile=profile;_viewOwner=profile;
     const sub=document.getElementById('lock-sub');if(sub)sub.textContent='Sincronizando seus dados...';
     const btn=document.getElementById('login-btn');if(btn){btn.disabled=true;btn.textContent='Carregando...'}
+    await ensureSoloUserData();
     await syncFromCloud(false);
     _cloudLoaded=true;
-    enforceSingleUserMode();populateAllSelects();refreshAll();renderCloudSection();showApp();
+    attachTransactionsListener();
+    updateProfileUI();populateAllSelects();refreshAll();renderCloudSection();showApp();
   }catch(err){showLogin();setLoginError('Falha ao carregar os dados: '+err.message)}
   finally{_appOpening=false;const sub=document.getElementById('lock-sub');if(sub)sub.textContent='Entre com sua conta autorizada'}
 }
@@ -1293,25 +1300,70 @@ const DEFAULT_CATS={
   ]
 };
 
-// ===================== PERFIL INDIVIDUAL =====================
-const PROFILES={usuario:{id:'usuario',name:'Usuário',icon:'👤'}};
-let _currentProfile='usuario';
-let _viewOwner='usuario';
-function otherProfile(){return'usuario'}
-function profileName(){return'Usuário'}
+// ===================== PERFIS (casal) =====================
+const PROFILES={
+  thiago:{id:'thiago',name:'Usuário',icon:'👤'},
+  luiza:{id:'thiago',name:'',icon:'👤'}
+};
+let _currentProfile=null; // 'thiago' | 'thiago'
+let _viewOwner='thiago'; // 'thiago' | 'thiago' | 'thiago' — o que está sendo exibido nas telas
+
+function otherProfile(p){return p==='thiago'?'thiago':'thiago'}
+function profileName(p){return PROFILES[p]?PROFILES[p].name:p}
+
 function updateProfileUI(){
   const badge=document.getElementById('profile-badge');
-  if(badge)badge.textContent=auth?.currentUser?.email||'Usuário';
+  if(badge)badge.textContent=(PROFILES[_currentProfile]?.icon||'')+' '+profileName(_currentProfile);
+  ['thiago'].forEach(v=>{
+    const el=document.getElementById('view-'+v);
+    if(!el)return;
+    const active=_viewOwner===v;
+    el.style.background=active?'var(--green)':'var(--bg3)';
+    el.style.color=active?'#0f1117':'var(--text2)';
+    el.style.borderColor=active?'var(--green)':'var(--border2)';
+    el.style.fontWeight=active?'600':'400';
+  });
 }
-function viewSuffix(){return''}
-function setViewOwner(){_viewOwner='usuario';updateProfileUI();refreshAll()}
-function getVisibleTx(){return _db.transactions}
-function visibleDB(){return{transactions:_db.transactions}}
+function viewSuffix(){
+  if(_viewOwner==='thiago')return ' · Casal';
+  return ' · '+profileName(_viewOwner);
+}
+function setViewOwner(v){
+  _viewOwner=v;
+  updateProfileUI();
+  document.querySelectorAll('button[onclick="openModal()"]').forEach(btn=>{
+    btn.disabled=v==='thiago';
+    btn.title=v==='thiago'?'Selecione Usuário ou  para registrar':'';
+    btn.style.opacity=v==='thiago'?'.45':'1';
+  });
+  refreshAll();
+}
+
+// retorna as transações visíveis de acordo com a visão selecionada (Meu/Dela/Casal)
+function getVisibleTx(){
+  const all=_db.transactions;
+  if(_viewOwner==='thiago')return all;
+  return all.filter(t=>t.owner===_viewOwner);
+}
+// retorna um "db" com transactions já filtradas pela visão — usar em telas de leitura/relatório
+function visibleDB(){return{transactions:getVisibleTx()}}
+
 function ownerTotals(txs,type='expense',category=null){
-  const total=txs.filter(t=>t.type===type&&(!category||t.category===category)).reduce((s,t)=>s+Number(t.amount||0),0);
-  return{usuario:total,thiago:0,luiza:0};
+  const filtered=txs.filter(t=>t.type===type&&(!category||t.category===category));
+  return{
+    thiago:filtered.filter(t=>t.owner==='thiago').reduce((s,t)=>s+t.amount,0),
+    luiza:filtered.filter(t=>t.owner==='thiago').reduce((s,t)=>s+t.amount,0)
+  };
 }
-function ownerSplitHtml(){return''}
+function ownerSplitHtml(totals,showValues=true){
+  const total=totals.thiago+totals.luiza;
+  const tp=total>0?totals.thiago/total*100:0;
+  const lp=total>0?totals.luiza/total*100:0;
+  return`<div style="margin-top:6px">
+    <div class="owner-split"><div class="owner-thiago" style="width:${tp}%"></div><div class="owner-luiza" style="width:${lp}%"></div></div>
+    ${showValues?`<div style="display:flex;justify-content:space-between;margin-top:3px;font-size:10px;color:var(--text3)"><span style="color:var(--blue)">Usuário ${fmt(totals.thiago)}</span><span style="color:#f59e0b"> ${fmt(totals.luiza)}</span></div>`:''}
+  </div>`;
+}
 
 let _db={transactions:[]},_cats=JSON.parse(JSON.stringify(DEFAULT_CATS)),_imports=[];
 
@@ -1326,12 +1378,14 @@ async function loadAll(){
   }catch{}
 }
 
-// Migração: dados criados antes da existência de perfis (Thiago/Luiza) não têm "owner".
-// Como a base já existente pertence ao Thiago (só ele usava o app), atribuímos owner='thiago'
+// Migração: dados criados antes da existência de perfis (Usuário/) não têm "owner".
+// Como a base já existente pertence ao Usuário (só ele usava o app), atribuímos owner='thiago'
 // a tudo que ainda não tiver dono definido. Roda uma única vez, silenciosamente.
 async function migrateOwnerField(){
   let changed=false;
-  _db.transactions.forEach(t=>{if(t.owner!=='usuario'){t.owner='usuario';changed=true} if(t.shared){delete t.shared;delete t.groupId;delete t.sharedTotal;delete t.splitPct;delete t.paidBy;changed=true}});
+  _db.transactions.forEach(t=>{
+    if(!t.owner){t.owner='thiago';changed=true}
+  });
   if(changed)await saveDB(_db);
 }
 
@@ -1358,7 +1412,13 @@ async function migrateDoacaoToExpense(){
 function loadCats(){return _cats}
 function loadDB(){return _db}
 function loadImports(){return _imports}
-async function saveCats(c){_cats=c;await store.set(CATS_KEY,JSON.stringify(c));scheduleAutoSync()}
+async function saveCats(c){
+  _cats=c;
+  await store.set(CATS_KEY,JSON.stringify(c));
+  if(!_suppressAutoSync && auth?.currentUser && realtimeDb){
+    try{await syncToCloud(false)}catch(err){logCloud('⚠ Categoria salva localmente; aguardando Firebase: '+err.message);scheduleAutoSync()}
+  }else scheduleAutoSync();
+}
 async function saveDB(db){
   const previous=new Map((_db?.transactions||[]).map(t=>[String(t.id),JSON.stringify(t)]));
   const next=new Map((db?.transactions||[]).map(t=>[String(t.id),JSON.stringify(t)]));
@@ -1381,9 +1441,31 @@ async function saveDB(db){
   _db=db;
   await store.set(DB_KEY,JSON.stringify(db));
 }
-async function saveImports(a){_imports=a;await store.set(IMP_KEY,JSON.stringify(a));scheduleAutoSync()}
+async function saveImports(a){
+  _imports=a;
+  await store.set(IMP_KEY,JSON.stringify(a));
+  if(!_suppressAutoSync && auth?.currentUser && realtimeDb){
+    try{await syncToCloud(false)}catch(err){logCloud('⚠ Importações salvas localmente; aguardando Firebase: '+err.message);scheduleAutoSync()}
+  }else scheduleAutoSync();
+}
 
-async function saveDBAndSync(db){await saveDB(db);scheduleAutoSync()}
+async function saveDBAndSync(db){
+  await saveDB(db);
+  if(_suppressAutoSync)return;
+  if(auth?.currentUser && realtimeDb){
+    try{
+      // O cadastro/edição/exclusão só é considerado sincronizado após o Firebase confirmar.
+      await syncToCloud(false);
+    }catch(err){
+      // A fila permanece intacta para uma nova tentativa.
+      logCloud('⚠ Alteração salva neste aparelho, mas ainda não confirmada no Firebase: '+err.message);
+      scheduleAutoSync();
+      // Não bloqueia a interface: a transação continua pendente e será reenviada.
+    }
+  }else{
+    scheduleAutoSync();
+  }
+}
 function scheduleAutoSync(){
   if(_suppressAutoSync||!_cloudLoaded||!auth?.currentUser||!realtimeDb)return;
   clearTimeout(_syncTimer);_syncTimer=setTimeout(()=>autoSyncToCloud(),500);
@@ -1461,8 +1543,8 @@ function toggleMobileMenu(){document.getElementById('sidebar').classList.toggle(
 // ===================== MODAL =====================
 let currentType='expense';
 function openModal(id){
-  if(false){
-    alert('A visualização Casal serve apenas para consultar os dados combinados. Para registrar uma transação, selecione Thiago ou Luiza.');
+  if(!id&&_viewOwner==='thiago'){
+    alert('A visualização Casal serve apenas para consultar os dados combinados. Para registrar uma transação, selecione Usuário ou .');
     return;
   }
   document.getElementById('modal-bg').classList.add('open');
@@ -1627,13 +1709,13 @@ async function saveTransaction(){
   const editingId=document.getElementById('f-editing-id').value;
   const isParceled=document.getElementById('f-parceled').checked&&!editingId;
   const isRecurring=document.getElementById('f-recurring').checked&&!editingId;
-  const isShared=false;
+  const isShared=document.getElementById('f-shared').checked&&!editingId&&!isParceled;
   if(isRecurring){
     const months=parseInt(document.getElementById('f-recurring-months').value)||12;
     if(months<2||months>120){alert('A recorrência deve ter entre 2 e 120 meses.');return}
     const baseDate=new Date(date+'T12:00');
     const recurringGroup='rec_'+Date.now().toString(36);
-    const sharedChecked=false;
+    const sharedChecked=document.getElementById('f-shared').checked;
     const minePct=parseFloat(document.getElementById('f-shared-mine-pct').value)||0;
     const partnerPct=parseFloat(document.getElementById('f-shared-partner-pct').value)||0;
     if(sharedChecked&&Math.round(minePct+partnerPct)!==100){alert('A divisão precisa somar 100%.');return}
@@ -1653,19 +1735,19 @@ async function saveTransaction(){
         db.transactions.unshift({
           id:Date.now().toString()+Math.random().toString(36).slice(2),type:currentType,description:desc,
           amount:parseFloat((amount*minePct/100).toFixed(2)),date:ds,category:cat,
-          owner:'usuario',shared:true,groupId:monthGroup,sharedTotal:amount,splitPct:minePct,paidBy:_currentProfile,
+          owner:_currentProfile,shared:true,groupId:monthGroup,sharedTotal:amount,splitPct:minePct,paidBy:_currentProfile,
           recurring:true,recurringGroup,recurringNum:i+1,recurringTotal:months
         });
         db.transactions.unshift({
           id:Date.now().toString()+Math.random().toString(36).slice(2),type:currentType,description:desc,
           amount:parseFloat((amount*partnerPct/100).toFixed(2)),date:ds,category:cat,
-          owner:'usuario',shared:true,groupId:monthGroup,sharedTotal:amount,splitPct:partnerPct,paidBy:_currentProfile,
+          owner:partner,shared:true,groupId:monthGroup,sharedTotal:amount,splitPct:partnerPct,paidBy:_currentProfile,
           recurring:true,recurringGroup,recurringNum:i+1,recurringTotal:months
         });
       }else{
         db.transactions.unshift({
           id:Date.now().toString()+Math.random().toString(36).slice(2),type:currentType,description:desc,
-          amount,date:ds,category:cat,owner:'usuario',
+          amount,date:ds,category:cat,owner:_currentProfile,
           recurring:true,recurringGroup,recurringNum:i+1,recurringTotal:months
         });
       }
@@ -1679,12 +1761,12 @@ async function saveTransaction(){
     db.transactions.unshift({
       id:Date.now().toString(),type:currentType,description:desc,
       amount:parseFloat((amount*minePct/100).toFixed(2)),date,category:cat,
-      owner:'usuario',shared:true,groupId,sharedTotal:amount,splitPct:minePct,paidBy:_currentProfile
+      owner:_currentProfile,shared:true,groupId,sharedTotal:amount,splitPct:minePct,paidBy:_currentProfile
     });
     db.transactions.unshift({
       id:Date.now().toString()+'_p',type:currentType,description:desc,
       amount:parseFloat((amount*partnerPct/100).toFixed(2)),date,category:cat,
-      owner:'usuario',shared:true,groupId,sharedTotal:amount,splitPct:partnerPct,paidBy:_currentProfile
+      owner:partner,shared:true,groupId,sharedTotal:amount,splitPct:partnerPct,paidBy:_currentProfile
     });
   } else if(isParceled){
     const n=parseInt(document.getElementById('f-parcelas').value)||2;
@@ -1706,7 +1788,7 @@ async function saveTransaction(){
         parcelaGroup:groupId,
         parcelaNum:i+1,
         parcelaTotal:n,
-        owner:'usuario'
+        owner:_currentProfile
       });
     }
   } else {
@@ -1714,7 +1796,7 @@ async function saveTransaction(){
       const idx=db.transactions.findIndex(t=>t.id===editingId);
       if(idx>=0)db.transactions[idx]={...db.transactions[idx],type:currentType,description:desc,amount,date,category:cat};
     } else {
-      db.transactions.unshift({id:Date.now().toString(),type:currentType,description:desc,amount,date,category:cat,owner:'usuario'});
+      db.transactions.unshift({id:Date.now().toString(),type:currentType,description:desc,amount,date,category:cat,owner:_currentProfile});
     }
   }
   db.transactions.sort((a,b)=>new Date(b.date)-new Date(a.date));
@@ -1782,7 +1864,7 @@ function renderBalanceCard(month,year){
   if(!el)return;
   const monthTx=filterTx(_db.transactions,month,year).filter(t=>t.shared&&t.groupId);
   const seen=new Set();
-  let owedToThiago=0, owedToLuiza=0, totalShared=0;
+  let owedToUsuário=0, owedTo=0, totalShared=0;
   monthTx.forEach(t=>{
     if(seen.has(t.groupId))return;
     seen.add(t.groupId);
@@ -1792,26 +1874,26 @@ function renderBalanceCard(month,year){
     totalShared+=t.sharedTotal||0;
     const otherLine=group.find(x=>x.owner!==payer);
     if(!otherLine)return;
-    if(payer==='thiago')owedToThiago+=otherLine.amount;
-    else if(payer==='luiza')owedToLuiza+=otherLine.amount;
+    if(payer==='thiago')owedToUsuário+=otherLine.amount;
+    else if(payer==='thiago')owedTo+=otherLine.amount;
   });
   if(!seen.size){
     el.innerHTML='<div class="empty" style="padding:14px 0"><div class="empty-icon">🤝</div>Nenhum gasto compartilhado neste mês ainda.</div>';
     return;
   }
-  const net=owedToThiago-owedToLuiza; // >0: Luiza deve a Thiago; <0: Thiago deve a Luiza
+  const net=owedToUsuário-owedTo; // >0:  deve a Usuário; <0: Usuário deve a 
   let resultLine;
   if(Math.abs(net)<0.01){
     resultLine=`<span style="color:var(--green);font-weight:600">✅ Contas equilibradas — ninguém deve nada este mês.</span>`;
   } else if(net>0){
-    resultLine=`<span style="color:var(--amber);font-weight:600">Luiza deve ${fmt(net)} a Thiago</span>`;
+    resultLine=`<span style="color:var(--amber);font-weight:600"> deve ${fmt(net)} a Usuário</span>`;
   } else {
-    resultLine=`<span style="color:var(--amber);font-weight:600">Thiago deve ${fmt(Math.abs(net))} a Luiza</span>`;
+    resultLine=`<span style="color:var(--amber);font-weight:600">Usuário deve ${fmt(Math.abs(net))} a </span>`;
   }
   el.innerHTML=`
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px">
-      <div><div style="font-size:11px;color:var(--text3);margin-bottom:3px">Total pago por Thiago (compartilhado)</div><div style="font-family:DM Mono;font-size:15px;font-weight:600">${fmt((_db.transactions.filter(t=>t.shared&&t.paidBy==='thiago'&&filterTx([t],month,year).length).reduce((s,t2)=>s+ (t2.sharedTotal&&t2.owner===t2.paidBy?t2.sharedTotal:0),0)))}</div></div>
-      <div><div style="font-size:11px;color:var(--text3);margin-bottom:3px">Total pago por Luiza (compartilhado)</div><div style="font-family:DM Mono;font-size:15px;font-weight:600">${fmt((_db.transactions.filter(t=>t.shared&&t.paidBy==='luiza'&&filterTx([t],month,year).length).reduce((s,t2)=>s+ (t2.sharedTotal&&t2.owner===t2.paidBy?t2.sharedTotal:0),0)))}</div></div>
+      <div><div style="font-size:11px;color:var(--text3);margin-bottom:3px">Total pago por Usuário (compartilhado)</div><div style="font-family:DM Mono;font-size:15px;font-weight:600">${fmt((_db.transactions.filter(t=>t.shared&&t.paidBy==='thiago'&&filterTx([t],month,year).length).reduce((s,t2)=>s+ (t2.sharedTotal&&t2.owner===t2.paidBy?t2.sharedTotal:0),0)))}</div></div>
+      <div><div style="font-size:11px;color:var(--text3);margin-bottom:3px">Total pago por  (compartilhado)</div><div style="font-family:DM Mono;font-size:15px;font-weight:600">${fmt((_db.transactions.filter(t=>t.shared&&t.paidBy==='thiago'&&filterTx([t],month,year).length).reduce((s,t2)=>s+ (t2.sharedTotal&&t2.owner===t2.paidBy?t2.sharedTotal:0),0)))}</div></div>
     </div>
     <div style="padding:12px 14px;background:var(--bg3);border-radius:var(--radius-sm);font-size:14px">${resultLine}</div>
   `;
@@ -1837,7 +1919,7 @@ function toggleCatFilter(catId){
 }
 
 function buildCatFilterChips(){
-  const usedCats=[...new Set((_viewOwner==='casal'?_db.transactions:_db.transactions.filter(t=>t.owner===_viewOwner)).map(t=>t.category))];
+  const usedCats=[...new Set((_viewOwner==='thiago'?_db.transactions:_db.transactions.filter(t=>t.owner===_viewOwner)).map(t=>t.category))];
   const container=document.getElementById('cat-filter-chips');
   if(!container)return;
   container.innerHTML=usedCats.map(cid=>{
@@ -1851,12 +1933,12 @@ function renderTxList(){
   const month=parseInt(document.getElementById('tx-month')?.value??-1);
   const year=parseInt(document.getElementById('tx-year')?.value??new Date().getFullYear());
   const listOwner=_viewOwner;
-  const db={transactions:_viewOwner==='casal'?_db.transactions:_db.transactions.filter(t=>t.owner===_viewOwner)};
+  const db={transactions:_viewOwner==='thiago'?_db.transactions:_db.transactions.filter(t=>t.owner===_viewOwner)};
   let txs=month===-1?db.transactions.filter(t=>new Date(t.date+'T12:00').getFullYear()===year):filterTx(db.transactions,month,year);
   if(txTypeFilter!=='all')txs=txs.filter(t=>t.type===txTypeFilter);
   if(txCatFilters.size>0)txs=txs.filter(t=>txCatFilters.has(t.category));
   const lbl=document.getElementById('tx-count-label');
-  if(lbl)lbl.textContent=txs.length+' transação(ões) · '+(_viewOwner==='casal'?'Usuário':profileName(listOwner));
+  if(lbl)lbl.textContent=txs.length+' transação(ões) · '+(_viewOwner==='thiago'?'Casal (listas combinadas)':profileName(listOwner));
   const title=document.getElementById('tx-list-title');
   if(title)title.textContent=txs.length+' transação(ões) encontrada(s)';
   // mostrar botão excluir filtradas só quando há filtro ativo
@@ -1869,7 +1951,7 @@ function renderTxList(){
 async function deleteFiltered(){
   const month=parseInt(document.getElementById('tx-month')?.value??-1);
   const year=parseInt(document.getElementById('tx-year')?.value??new Date().getFullYear());
-  const listOwner=_viewOwner==='casal'?_currentProfile:_viewOwner;
+  const listOwner=_viewOwner==='thiago'?_currentProfile:_viewOwner;
   const db={transactions:_db.transactions.filter(t=>t.owner===listOwner)};
   let toDelete=month===-1?db.transactions.filter(t=>new Date(t.date+'T12:00').getFullYear()===year):filterTx(db.transactions,month,year);
   if(txTypeFilter!=='all')toDelete=toDelete.filter(t=>t.type===txTypeFilter);
@@ -1982,7 +2064,7 @@ function renderInsights(){
   document.getElementById('ins-rank-expense').innerHTML=rankExp.slice(0,6).map((m,i)=>{
     const monthIdx=MONTHS.indexOf(m.name);
     const monthTx=allTxs.filter(t=>t.type==='expense'&&new Date(t.date+'T12:00').getMonth()===monthIdx);
-    const split=_viewOwner==='casal'?ownerSplitHtml(ownerTotals(monthTx,'expense')):'';
+    const split=_viewOwner==='thiago'?ownerSplitHtml(ownerTotals(monthTx,'expense')):'';
     return`<div class="rank-row" style="display:block">
       <div style="display:flex;align-items:center;gap:10px">
         <div class="rank-num">${i+1}</div>
@@ -2002,7 +2084,7 @@ function renderInsights(){
     const color=m.income<0?'var(--amber)':'var(--green)';
     const monthIdx=MONTHS.indexOf(m.name);
     const monthTx=allTxs.filter(t=>t.type==='income'&&new Date(t.date+'T12:00').getMonth()===monthIdx);
-    const split=_viewOwner==='casal'?ownerSplitHtml(ownerTotals(monthTx,'income')):'';
+    const split=_viewOwner==='thiago'?ownerSplitHtml(ownerTotals(monthTx,'income')):'';
     return`<div class="rank-row" style="display:block">
       <div style="display:flex;align-items:center;gap:10px">
         <div class="rank-num">${i+1}</div>
@@ -2026,7 +2108,7 @@ function renderInsights(){
   }
   const expenseHtml=catData.map(x=>{
     const pct=totExp>0?(x.total/totExp*100).toFixed(1):0;
-    const split=_viewOwner==='casal'?ownerSplitHtml(ownerTotals(allTxs,'expense',x.cat.id)):'';
+    const split=_viewOwner==='thiago'?ownerSplitHtml(ownerTotals(allTxs,'expense',x.cat.id)):'';
     return`<div class="rank-row" style="display:block">
       <div style="display:flex;align-items:center;gap:10px">
         <div style="width:10px;height:10px;border-radius:50%;background:${x.cat.color};flex-shrink:0"></div>
@@ -2040,7 +2122,7 @@ function renderInsights(){
   const incomeHtml=incCatData.map(x=>{
     const incomeTotal=incCatData.reduce((s,i)=>s+Math.max(0,i.total),0);
     const pct=incomeTotal>0?(Math.max(0,x.total)/incomeTotal*100).toFixed(1):0;
-    const split=_viewOwner==='casal'?ownerSplitHtml(ownerTotals(allTxs,'income',x.cat.id)):'';
+    const split=_viewOwner==='thiago'?ownerSplitHtml(ownerTotals(allTxs,'income',x.cat.id)):'';
     const color=x.total<0?'var(--amber)':'var(--green)';
     return`<div class="rank-row" style="display:block">
       <div style="display:flex;align-items:center;gap:10px">
@@ -2053,15 +2135,11 @@ function renderInsights(){
   }).join('');
 
   document.getElementById('ins-cat-detail').innerHTML=`
-    ${_viewOwner==='casal'?'<div class="owner-legend" style="margin-bottom:12px"><span><i class="owner-dot owner-thiago"></i>Thiago</span><span><i class="owner-dot owner-luiza"></i>Luiza</span></div>':''}
-    <div class="ins-detail-section">
-      <div class="ins-detail-title" style="color:var(--red)">Despesas por categoria</div>
-      <div class="ins-detail-grid">${expenseHtml?expenseHtml.replaceAll('class="rank-row" style="display:block"','class="rank-row ins-detail-item" style="display:block"'):'<div class="empty">Sem despesas no período</div>'}</div>
-    </div>
-    <div class="ins-detail-section" style="margin-top:16px">
-      <div class="ins-detail-title" style="color:var(--green)">Receitas por categoria</div>
-      <div class="ins-detail-grid">${incomeHtml?incomeHtml.replaceAll('class="rank-row" style="display:block"','class="rank-row ins-detail-item" style="display:block"'):'<div class="empty">Sem receitas no período</div>'}</div>
-    </div>`;
+    ${_viewOwner==='thiago'?'<div class="owner-legend" style="margin-bottom:10px"><span><i class="owner-dot owner-thiago"></i>Usuário</span><span><i class="owner-dot owner-luiza"></i></span></div>':''}
+    <div style="padding:6px 0;font-size:11px;color:var(--red);text-transform:uppercase;letter-spacing:.5px">Despesas por categoria</div>
+    ${expenseHtml||'<div class="empty">Sem despesas no período</div>'}
+    <div style="padding:14px 0 6px;font-size:11px;color:var(--green);text-transform:uppercase;letter-spacing:.5px">Receitas por categoria</div>
+    ${incomeHtml||'<div class="empty">Sem receitas no período</div>'}`;
 
 }
 
@@ -2088,15 +2166,15 @@ function renderCategorias(){
       const pct=grossTotal>0?Math.round((Math.abs(x.total)/grossTotal)*100):0;
       const amtColor=type==='income'&&x.total<0?'var(--amber)':'inherit';
       const sign=type==='income'&&x.total<0?'−':'';
-      const split=_viewOwner==='casal'?ownerSplitHtml(ownerTotals(txs,type,x.cat.id),true):'';
+      const split=_viewOwner==='thiago'?ownerSplitHtml(ownerTotals(txs,type,x.cat.id),true):'';
       return`<div class="cat-row" style="align-items:flex-start"><div class="cat-name-col">${x.cat.icon} ${x.cat.name}</div><div style="flex:1"><div class="cat-bar-wrap"><div class="cat-bar" style="width:${pct}%;background:${x.cat.color}"></div></div>${split}</div><div class="cat-amt" style="color:${amtColor}">${sign}${fmt(x.total)}</div><div class="cat-pct">${pct}%</div></div>`;
     }).join('');
   }
   makeBars('expense','cat-expense-bars');makeBars('income','cat-income-bars');
-  if(_viewOwner==='casal'){
+  if(_viewOwner==='thiago'){
     ['cat-expense-bars','cat-income-bars'].forEach(id=>{
       const el=document.getElementById(id);
-      if(el)el.insertAdjacentHTML('afterbegin','<div class="owner-legend" style="padding:0 20px 8px"><span><i class="owner-dot owner-thiago"></i>Thiago</span><span><i class="owner-dot owner-luiza"></i>Luiza</span></div>');
+      if(el)el.insertAdjacentHTML('afterbegin','<div class="owner-legend" style="padding:0 20px 8px"><span><i class="owner-dot owner-thiago"></i>Usuário</span><span><i class="owner-dot owner-luiza"></i></span></div>');
     });
   }
   const expTotal=txs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
@@ -2109,45 +2187,6 @@ function renderCategorias(){
   catLeg.style.cssText='display:flex;flex-direction:column;gap:7px;margin-top:14px';
 }
 
-
-function annualBreakdownTooltipLabel(ctx){
-  const label=String(ctx.dataset?.label||'');
-  const raw=Number(ctx.raw)||0;
-
-  if(_viewOwner!=='casal'){
-    return `${label}: ${fmt(raw)}`;
-  }
-
-  const lower=label.toLowerCase();
-  const isIncome=lower.includes('receita');
-  const isExpense=lower.includes('despesa');
-
-  if(!isIncome&&!isExpense){
-    return `${label}: ${fmt(raw)}`;
-  }
-
-  const typeWord=isIncome?'receita':'despesa';
-  const datasets=ctx.chart.data.datasets||[];
-  const thiagoDs=datasets.find(ds=>{
-    const l=String(ds.label||'').toLowerCase();
-    return l.includes(typeWord)&&l.includes('thiago');
-  });
-  const luizaDs=datasets.find(ds=>{
-    const l=String(ds.label||'').toLowerCase();
-    return l.includes(typeWord)&&l.includes('luiza');
-  });
-
-  const thiago=Number(thiagoDs?.data?.[ctx.dataIndex])||0;
-  const luiza=Number(luizaDs?.data?.[ctx.dataIndex])||0;
-  const total=thiago+luiza;
-
-  return [
-    `Total: ${fmt(total)}`,
-    `Thiago: ${fmt(thiago)}`,
-    `Luiza: ${fmt(luiza)}`
-  ];
-}
-
 // ===================== ANUAL =====================
 function renderAnual(){
   const year=parseInt(document.getElementById('anual-year')?.value??new Date().getFullYear());
@@ -2157,18 +2196,18 @@ function renderAnual(){
   const totI=months.reduce((s,m)=>s+m.income,0),totE=months.reduce((s,m)=>s+m.expense,0),totB=totI-totE;
   document.getElementById('anual-income').textContent=fmt(totI);document.getElementById('anual-expense').textContent=fmt(totE);document.getElementById('anual-balance').textContent=fmt(totB);document.getElementById('anual-balance').style.color=totB>=0?'var(--green)':'var(--red)';
   chartAnual=dc(chartAnual);
-  const annualDatasets=_viewOwner==='casal'?[
-    {label:'Receitas Thiago',data:MONTHS_SHORT.map((_,m)=>filterTx(_db.transactions.filter(t=>t.owner==='thiago'&&t.type==='income'),m,year).reduce((s,t)=>s+t.amount,0)),backgroundColor:'rgba(22,163,74,.92)',borderColor:'#15803d',borderWidth:1,stack:'receitas',borderRadius:3},
-    {label:'Receitas Luiza',data:MONTHS_SHORT.map((_,m)=>filterTx(_db.transactions.filter(t=>t.owner==='luiza'&&t.type==='income'),m,year).reduce((s,t)=>s+t.amount,0)),backgroundColor:'rgba(110,231,183,.92)',borderColor:'#34d399',borderWidth:1,stack:'receitas',borderRadius:3},
-    {label:'Despesas Thiago',data:MONTHS_SHORT.map((_,m)=>filterTx(_db.transactions.filter(t=>t.owner==='thiago'&&t.type==='expense'),m,year).reduce((s,t)=>s+t.amount,0)),backgroundColor:'rgba(185,28,28,.88)',borderColor:'#991b1b',borderWidth:1,stack:'despesas',borderRadius:3},
-    {label:'Despesas Luiza',data:MONTHS_SHORT.map((_,m)=>filterTx(_db.transactions.filter(t=>t.owner==='luiza'&&t.type==='expense'),m,year).reduce((s,t)=>s+t.amount,0)),backgroundColor:'rgba(251,113,133,.88)',borderColor:'#fb7185',borderWidth:1,stack:'despesas',borderRadius:3},
-    {type:'line',label:'Saldo do casal',data:months.map(x=>x.balance),borderColor:'rgba(96,165,250,.95)',backgroundColor:'transparent',borderWidth:2,pointRadius:3,tension:.3}
+  const annualDatasets=_viewOwner==='thiago'?[
+    {label:'Receitas Usuário',data:MONTHS_SHORT.map((_,m)=>filterTx(_db.transactions.filter(t=>t.owner==='thiago'&&t.type==='income'),m,year).reduce((s,t)=>s+t.amount,0)),backgroundColor:'rgba(37,99,235,.92)',borderColor:'#60a5fa',borderWidth:1,stack:'receitas',borderRadius:3},
+    {label:'Receitas ',data:MONTHS_SHORT.map((_,m)=>filterTx(_db.transactions.filter(t=>t.owner==='thiago'&&t.type==='income'),m,year).reduce((s,t)=>s+t.amount,0)),backgroundColor:'rgba(245,158,11,.92)',borderColor:'#fbbf24',borderWidth:1,stack:'receitas',borderRadius:3},
+    {label:'Despesas Usuário',data:MONTHS_SHORT.map((_,m)=>filterTx(_db.transactions.filter(t=>t.owner==='thiago'&&t.type==='expense'),m,year).reduce((s,t)=>s+t.amount,0)),backgroundColor:'rgba(30,64,175,.78)',borderColor:'#1e3a8a',borderWidth:2,stack:'despesas',borderRadius:3},
+    {label:'Despesas ',data:MONTHS_SHORT.map((_,m)=>filterTx(_db.transactions.filter(t=>t.owner==='thiago'&&t.type==='expense'),m,year).reduce((s,t)=>s+t.amount,0)),backgroundColor:'rgba(180,83,9,.78)',borderColor:'#92400e',borderWidth:2,stack:'despesas',borderRadius:3},
+    {type:'line',label:'Saldo do casal',data:months.map(x=>x.balance),borderColor:'rgba(34,211,160,.95)',backgroundColor:'transparent',borderWidth:2,pointRadius:3,tension:.3}
   ]:[
     {label:'Receitas',data:months.map(x=>x.income),backgroundColor:'rgba(34,211,160,0.7)',borderRadius:4},
     {label:'Despesas',data:months.map(x=>x.expense),backgroundColor:'rgba(245,101,101,0.7)',borderRadius:4},
     {type:'line',label:'Saldo',data:months.map(x=>x.balance),borderColor:'rgba(96,165,250,0.9)',backgroundColor:'transparent',borderWidth:2,pointRadius:3,tension:0.3}
   ];
-  chartAnual=new Chart(document.getElementById('chart-anual'),{type:'bar',data:{labels:MONTHS_SHORT,datasets:annualDatasets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'nearest',intersect:true},plugins:{legend:{display:_viewOwner==='casal',labels:{color:'#8b93a8',boxWidth:10}},tooltip:{callbacks:{label:annualBreakdownTooltipLabel}}},scales:{x:{stacked:_viewOwner==='casal',grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#8b93a8'}},y:{stacked:_viewOwner==='casal',grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#8b93a8',callback:v=>'R$'+(v/1000).toFixed(0)+'k'}}}}});
+  chartAnual=new Chart(document.getElementById('chart-anual'),{type:'bar',data:{labels:MONTHS_SHORT,datasets:annualDatasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:_viewOwner==='thiago',labels:{color:'#8b93a8',boxWidth:10}}},scales:{x:{stacked:_viewOwner==='thiago',grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#8b93a8'}},y:{stacked:_viewOwner==='thiago',grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#8b93a8',callback:v=>'R$'+(v/1000).toFixed(0)+'k'}}}}});
   document.getElementById('anual-tbody').innerHTML=months.map(m=>{
     const bc=m.balance>=0?'var(--green)':'var(--red)';
     const incColor=m.income<0?'var(--amber)':'var(--green)';
@@ -2192,15 +2231,15 @@ function renderCatAnual(){
   const actv=monthData.filter(m=>m.total>0);
   const avg=actv.length?actv.reduce((s,m)=>s+m.total,0)/actv.length:0;
   chartCatAnual=dc(chartCatAnual);
-  const catAnnualDatasets=_viewOwner==='casal'?[
-    {label:`${type==='income'?'Receita':'Despesa'} — Thiago`,data:MONTHS_SHORT.map((_,m)=>filterTx(_db.transactions.filter(t=>t.owner==='thiago'&&t.type===type&&t.category===catId),m,year).reduce((s,t)=>s+t.amount,0)),backgroundColor:type==='income'?'rgba(22,163,74,.92)':'rgba(185,28,28,.88)',borderColor:type==='income'?'#15803d':'#991b1b',borderWidth:1,stack:'categoria',borderRadius:4},
-    {label:`${type==='income'?'Receita':'Despesa'} — Luiza`,data:MONTHS_SHORT.map((_,m)=>filterTx(_db.transactions.filter(t=>t.owner==='luiza'&&t.type===type&&t.category===catId),m,year).reduce((s,t)=>s+t.amount,0)),backgroundColor:type==='income'?'rgba(110,231,183,.92)':'rgba(251,113,133,.88)',borderColor:type==='income'?'#34d399':'#fb7185',borderWidth:1,stack:'categoria',borderRadius:4},
+  const catAnnualDatasets=_viewOwner==='thiago'?[
+    {label:`${type==='income'?'Receita':'Despesa'} — Usuário`,data:MONTHS_SHORT.map((_,m)=>filterTx(_db.transactions.filter(t=>t.owner==='thiago'&&t.type===type&&t.category===catId),m,year).reduce((s,t)=>s+t.amount,0)),backgroundColor:type==='income'?'rgba(37,99,235,.92)':'rgba(30,64,175,.78)',borderColor:type==='income'?'#60a5fa':'#1e3a8a',borderWidth:type==='income'?1:2,stack:'categoria',borderRadius:4},
+    {label:`${type==='income'?'Receita':'Despesa'} — `,data:MONTHS_SHORT.map((_,m)=>filterTx(_db.transactions.filter(t=>t.owner==='thiago'&&t.type===type&&t.category===catId),m,year).reduce((s,t)=>s+t.amount,0)),backgroundColor:type==='income'?'rgba(245,158,11,.92)':'rgba(180,83,9,.78)',borderColor:type==='income'?'#fbbf24':'#92400e',borderWidth:type==='income'?1:2,stack:'categoria',borderRadius:4},
     {type:'line',label:'Média do casal',data:monthData.map(()=>avg),borderColor:'rgba(255,255,255,.35)',borderDash:[4,4],borderWidth:1.5,pointRadius:0,backgroundColor:'transparent'}
   ]:[
     {label:cat.name,data:monthData.map(x=>x.total),backgroundColor:monthData.map(x=>x.total>0?cat.color+'bb':'rgba(255,255,255,0.05)'),borderColor:cat.color,borderWidth:1,borderRadius:5},
     {type:'line',label:'Média',data:monthData.map(()=>avg),borderColor:'rgba(255,255,255,0.25)',borderDash:[4,4],borderWidth:1.5,pointRadius:0,backgroundColor:'transparent'}
   ];
-  chartCatAnual=new Chart(document.getElementById('chart-cat-anual'),{type:'bar',data:{labels:monthData.map(x=>x.short),datasets:catAnnualDatasets},options:{responsive:true,maintainAspectRatio:false,onClick:(evt,elements)=>{if(elements?.length&&elements[0].datasetIndex<(_viewOwner==='casal'?2:1))openCategoryHistory(year,elements[0].index,type,catId)},plugins:{legend:{display:_viewOwner==='casal',labels:{color:'#8b93a8',boxWidth:10}},tooltip:{callbacks:{label:annualBreakdownTooltipLabel,afterLabel:ctx=>ctx.datasetIndex<(_viewOwner==='casal'?2:1)?' Clique para abrir o histórico':''}}},scales:{x:{stacked:_viewOwner==='casal',grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#8b93a8'}},y:{stacked:_viewOwner==='casal',grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#8b93a8',callback:v=>'R$'+(v/1000).toFixed(1)+'k'}}}}});
+  chartCatAnual=new Chart(document.getElementById('chart-cat-anual'),{type:'bar',data:{labels:monthData.map(x=>x.short),datasets:catAnnualDatasets},options:{responsive:true,maintainAspectRatio:false,onClick:(evt,elements)=>{if(elements?.length&&elements[0].datasetIndex<(_viewOwner==='thiago'?2:1))openCategoryHistory(year,elements[0].index,type,catId)},plugins:{legend:{display:_viewOwner==='thiago',labels:{color:'#8b93a8',boxWidth:10}},tooltip:{callbacks:{label:ctx=>` ${fmt(ctx.raw)}`,afterLabel:ctx=>ctx.datasetIndex<(_viewOwner==='thiago'?2:1)?' Clique para abrir o histórico':''}}},scales:{x:{stacked:_viewOwner==='thiago',grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#8b93a8'}},y:{stacked:_viewOwner==='thiago',grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#8b93a8',callback:v=>'R$'+(v/1000).toFixed(1)+'k'}}}}});
   const best=monthData.reduce((a,b)=>b.total>a.total?b:a,monthData[0]);
   document.getElementById('cat-anual-summary').innerHTML=[`<span style="background:var(--bg3);padding:5px 12px;border-radius:8px">📦 Total: <strong style="color:${cat.color}">${fmt(annual)}</strong></span>`,`<span style="background:var(--bg3);padding:5px 12px;border-radius:8px">📊 Média: <strong>${fmt(avg)}</strong></span>`,best.total>0?`<span style="background:var(--bg3);padding:5px 12px;border-radius:8px">🏆 Maior: <strong>${best.name} (${fmt(best.total)})</strong></span>`:'',`<span style="background:var(--bg3);padding:5px 12px;border-radius:8px">🔢 Lançamentos: <strong>${monthData.reduce((s,m)=>s+m.count,0)}</strong></span>`].join('');
 }
@@ -2220,7 +2259,7 @@ function openCategoryHistory(year,month,type,catId){
   document.getElementById('history-modal-summary').innerHTML=`
     <span style="background:var(--bg3);padding:6px 10px;border-radius:8px">Total: <strong>${fmt(total)}</strong></span>
     <span style="background:var(--bg3);padding:6px 10px;border-radius:8px">${txs.length} lançamento(s)</span>
-    ${_viewOwner==='casal'?`<span style="background:var(--bg3);padding:6px 10px;border-radius:8px;color:var(--blue)">Thiago: ${fmt(owners.thiago)}</span><span style="background:var(--bg3);padding:6px 10px;border-radius:8px;color:#f59e0b">Luiza: ${fmt(owners.luiza)}</span>`:''}`;
+    ${_viewOwner==='thiago'?`<span style="background:var(--bg3);padding:6px 10px;border-radius:8px;color:var(--blue)">Usuário: ${fmt(owners.thiago)}</span><span style="background:var(--bg3);padding:6px 10px;border-radius:8px;color:#f59e0b">: ${fmt(owners.luiza)}</span>`:''}`;
 
   document.getElementById('history-modal-list').innerHTML=txs.length?txs.map(t=>{
     const d=new Date(t.date+'T12:00');
@@ -2297,7 +2336,7 @@ function handleFile(file){
       const warn=document.getElementById('import-warn');
       if(!parsed.length){warn.style.display='block';warn.textContent='⚠ Nenhuma linha válida. Verifique o formato.'}else warn.style.display='none';
       document.getElementById('import-preview').style.display='block';
-      if(document.getElementById('imp-owner'))document.getElementById('imp-owner').value='usuario';
+      if(document.getElementById('imp-owner'))document.getElementById('imp-owner').value=_currentProfile;
     }catch(err){alert('Erro: '+err.message)}
   };
   reader.readAsBinaryString(file);
@@ -2463,13 +2502,13 @@ function renderCloudSection(){
   const profileEl=document.getElementById('cloud-user-profile');if(profileEl)profileEl.textContent=_currentProfile?profileName(_currentProfile):'—';
   const urlEl=document.getElementById('cloud-url-display');if(urlEl)urlEl.textContent=FIREBASE_CONFIG.databaseURL;
 }
-function firebaseSafeKey(id){
-  const raw=String(id??'').trim();
-  if(!raw)return 'tx_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2);
-  // O Realtime Database proíbe . # $ / [ ] e caracteres de controle nas chaves.
-  // encodeURIComponent resolve todos eles, exceto o ponto, tratado separadamente.
-  return encodeURIComponent(raw).replace(/\./g,'%2E');
+
+function firebaseSafeKey(value){
+  // Realtime Database não aceita . # $ [ ] / nas chaves.
+  // Mantemos o ID original dentro do objeto e usamos uma chave segura no Firebase.
+  return String(value ?? '').replace(/[.#$\[\]\/]/g,'_');
 }
+
 function txArrayToMap(txs){
   const map={};
   (txs||[]).forEach(t=>{if(t?.id!=null)map[String(t.id)]=t});
@@ -2489,42 +2528,60 @@ function cloudPayload(){
   };
 }
 async function syncToCloud(showFeedback=false){
-  if(!auth?.currentUser||!realtimeDb)throw new Error('Usuário não autenticado.');
-  try{
-    if(showFeedback)logCloud('⏳ Enviando alterações...');
-
-    const updates={};
+  // Serializa gravações para evitar duas operações simultâneas sobrescrevendo a fila.
+  const run=async()=>{
+    if(!auth?.currentUser||!realtimeDb)throw new Error('Usuário não autenticado.');
+    const uid=auth.currentUser.uid;
+    const dirty=[..._localDirtyIds];
+    const deleted=[..._localDeletedIds];
     const localMap=txArrayToMap(_db.transactions);
+    if(!dirty.length && !deleted.length && _cats && _imports==null){return true}
+    try{
+      if(showFeedback)logCloud('⏳ Enviando alterações...');
 
-    _localDirtyIds.forEach(id=>{
-      if(localMap[id])updates[`fintrack/transactions/${firebaseSafeKey(id)}`]={
-        ...localMap[id],
-        updatedAt:firebase.database.ServerValue.TIMESTAMP,
-        updatedBy:auth.currentUser.uid
-      };
-    });
-    _localDeletedIds.forEach(id=>{
-      updates[`fintrack/transactions/${firebaseSafeKey(id)}`]=null;
-    });
+      // Cada transação é uma operação independente. O ID original nunca é usado
+      // como chave do Firebase; somente firebaseSafeKey(id) é usado no caminho.
+      for(const id of dirty){
+        const tx=localMap[id];
+        if(!tx)continue;
+        const key=firebaseSafeKey(id);
+        await soloUserRoot().child('transactions').child(key).set({
+          ...tx,
+          id:String(tx.id),
+          firebaseKey:key,
+          updatedAt:firebase.database.ServerValue.TIMESTAMP,
+          updatedBy:uid
+        });
+        _cloudTxMap[key]={...tx,id:String(tx.id),firebaseKey:key};
+        _localDirtyIds.delete(id);
+      }
 
-    updates['fintrack/categories']=JSON.stringify(_cats);
-    updates['fintrack/imports']=JSON.stringify(_imports);
-    updates['fintrack/metadata/updated']=firebase.database.ServerValue.TIMESTAMP;
-    updates['fintrack/metadata/updatedBy']=auth.currentUser.uid;
+      for(const id of deleted){
+        await soloUserRoot().child('transactions').child(firebaseSafeKey(id)).remove();
+        delete _cloudTxMap[firebaseSafeKey(id)];
+        _localDeletedIds.delete(id);
+      }
 
-    await realtimeDb.ref().update(updates);
+      // Mantém configurações separadas da coleção de transações.
+      await soloUserRoot().child('categories').set(JSON.stringify(_cats));
+      await soloUserRoot().child('imports').set(JSON.stringify(_imports));
+      await soloUserRoot().child('metadata').update({
+        updated:firebase.database.ServerValue.TIMESTAMP,
+        updatedBy:uid
+      });
 
-    _localDirtyIds.forEach(id=>{if(localMap[id])_cloudTxMap[firebaseSafeKey(id)]=localMap[id]});
-    _localDeletedIds.forEach(id=>delete _cloudTxMap[firebaseSafeKey(id)]);
-    _localDirtyIds.clear();
-    _localDeletedIds.clear();
+      _lastCloudSyncAt=Date.now();
+      logCloud('✓ Firebase confirmado às '+new Date().toLocaleTimeString('pt-BR'));
+      renderCloudSection();
+      return true;
+    }catch(err){
+      logCloud('✗ Firebase recusou a gravação: '+err.message);
+      throw err;
+    }
+  };
 
-    logCloud('✓ Alterações sincronizadas em '+new Date().toLocaleTimeString('pt-BR'));
-  }catch(err){
-    logCloud('✗ Erro ao enviar: '+err.message);
-    if(showFeedback)alert('Não foi possível enviar os dados.\n'+err.message);
-    throw err;
-  }
+  _cloudWriteQueue=_cloudWriteQueue.then(run,run);
+  return _cloudWriteQueue;
 }
 async function migrateLegacyCloudIfNeeded(data){
   if(data?.transactions)return data;
@@ -2533,7 +2590,7 @@ async function migrateLegacyCloudIfNeeded(data){
   const legacy=JSON.parse(data.db);
   const txMap=txArrayToMap(legacy.transactions||[]);
   const updates={};
-  Object.entries(txMap).forEach(([id,t])=>updates[`fintrack/transactions/${firebaseSafeKey(id)}`]=t);
+  Object.entries(txMap).forEach(([id,t])=>updates[`fintrack/transactions/${firebaseSafeKey(id)}`]={...t,id:t.id,firebaseKey:firebaseSafeKey(id)});
   if(data.cats)updates['fintrack/categories']=data.cats;
   if(data.imports)updates['fintrack/imports']=data.imports;
   updates['fintrack/metadata/migratedAt']=firebase.database.ServerValue.TIMESTAMP;
@@ -2546,15 +2603,36 @@ async function migrateLegacyCloudIfNeeded(data){
     imports:data.imports
   };
 }
+
+async function ensureSoloUserData(){
+  if(!auth?.currentUser || !realtimeDb) throw new Error('Usuário não autenticado.');
+  const target = soloUserRoot();
+  const current = await target.once('value');
+  if(current.exists()) return;
+
+  const legacy = await realtimeDb.ref('fintrack').once('value');
+  const data = legacy.val();
+  if(!data) return;
+
+  await target.set({
+    transactions: data.transactions || {},
+    categories: data.categories || data.cats || null,
+    imports: data.imports || null,
+    metadata: {
+      migratedFromLegacy: true,
+      migratedAt: firebase.database.ServerValue.TIMESTAMP,
+      migratedBy: auth.currentUser.uid
+    }
+  });
+}
 function attachTransactionsListener(){
-  if(_transactionsListener)realtimeDb.ref('fintrack/transactions').off('value',_transactionsListener);
+  if(_transactionsListener)soloUserRoot().child('transactions').off('value',_transactionsListener);
   _transactionsListener=async snap=>{
     const remote=snap.val()||{};
     _cloudTxMap=remote;
 
     const localMap=txArrayToMap(_db.transactions);
     const merged={...remote};
-
     _localDirtyIds.forEach(id=>{if(localMap[id])merged[firebaseSafeKey(id)]=localMap[id]});
     _localDeletedIds.forEach(id=>delete merged[firebaseSafeKey(id)]);
 
@@ -2565,7 +2643,7 @@ function attachTransactionsListener(){
     refreshAll();
     logCloud('↻ Atualização em tempo real recebida às '+new Date().toLocaleTimeString('pt-BR'));
   };
-  realtimeDb.ref('fintrack/transactions').on('value',_transactionsListener,err=>{
+  soloUserRoot().child('transactions').on('value',_transactionsListener,err=>{
     logCloud('✗ Falha no acompanhamento em tempo real: '+err.message);
   });
 }
@@ -2587,11 +2665,19 @@ async function syncFromCloud(showFeedback=false){
     data=await migrateLegacyCloudIfNeeded(data);
     const remoteMap=data.transactions||{};
     _cloudTxMap=remoteMap;
-    _localDirtyIds.clear();
-    _localDeletedIds.clear();
+    const pendingDirty=new Set(_localDirtyIds);
+    const pendingDeleted=new Set(_localDeletedIds);
 
     _suppressAutoSync=true;
-    await saveDB({transactions:txMapToArray(remoteMap)});
+    const mergedRemote={...remoteMap};
+    const currentMap=txArrayToMap(_db.transactions);
+    pendingDirty.forEach(id=>{if(currentMap[id])mergedRemote[firebaseSafeKey(id)]=currentMap[id]});
+    pendingDeleted.forEach(id=>delete mergedRemote[firebaseSafeKey(id)]);
+    await saveDB({transactions:txMapToArray(mergedRemote)});
+    _localDirtyIds.clear();
+    _localDeletedIds.clear();
+    pendingDirty.forEach(id=>_localDirtyIds.add(id));
+    pendingDeleted.forEach(id=>_localDeletedIds.add(id));
     if(data.categories)await saveCats(JSON.parse(data.categories));
     else if(data.cats)await saveCats(JSON.parse(data.cats));
     if(data.imports)await saveImports(JSON.parse(data.imports));
@@ -2613,6 +2699,20 @@ async function syncFromCloud(showFeedback=false){
 }
 
 function logCloud(msg){const el=document.getElementById('cloud-log');if(el)el.innerHTML=msg+'<br>'+el.innerHTML}
+async function forceFirebaseSync(){
+  try{
+    if(!auth?.currentUser){throw new Error('Usuário não autenticado.')}
+    await syncToCloud(true);
+    await syncFromCloud(true);
+    alert('✓ Firebase sincronizado e confirmado.');
+  }catch(err){
+    alert('✗ Falha na sincronização.\n\n'+err.message);
+  }
+}
+function firebaseSyncDiagnostics(){
+  const u=auth?.currentUser;
+  return {uid:u?.uid||null,email:u?.email||null,cloudLoaded:_cloudLoaded,dirty:_localDirtyIds.size,deleted:_localDeletedIds.size,transactions:_db.transactions.length};
+}
 
 // ===================== RESET =====================
 function renderResetSection(){
@@ -2807,13 +2907,13 @@ function renderComparativo(){
         <div style="flex:1;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden"><div style="width:${pctCur}%;height:100%;background:${r.cat.color};border-radius:3px"></div></div>
         <span style="font-size:11px;font-family:DM Mono;color:var(--red);min-width:80px;text-align:right">${r.cur>0?fmt(r.cur):'—'}</span>
       </div>
-      ${_viewOwner==='casal'?ownerSplitHtml(r.curOwners):''}
+      ${_viewOwner==='thiago'?ownerSplitHtml(r.curOwners):''}
       <div style="display:flex;gap:6px;align-items:center">
         <span style="font-size:10px;color:var(--text3);width:28px">${prevYear}</span>
         <div style="flex:1;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden"><div style="width:${pctPrev}%;height:100%;background:${r.cat.color};border-radius:3px;opacity:.35"></div></div>
         <span style="font-size:11px;font-family:DM Mono;color:var(--text2);min-width:80px;text-align:right">${r.prev>0?fmt(r.prev):'—'}</span>
       </div>
-      ${_viewOwner==='casal'?ownerSplitHtml(r.prevOwners):''}
+      ${_viewOwner==='thiago'?ownerSplitHtml(r.prevOwners):''}
     </div>`;
   }).join('')||'<div class="empty">Sem dados para comparar</div>';
 
@@ -3460,17 +3560,6 @@ function toggleMonthlyDetail(){
   renderPatTable(show);
 }
 
-// ===================== MODO INDIVIDUAL: GARANTIAS =====================
-function enforceSingleUserMode(){
-  _currentProfile='usuario';_viewOwner='usuario';
-  const shared=document.getElementById('f-shared');if(shared)shared.checked=false;
-  const sharedRow=document.getElementById('f-shared-row');if(sharedRow)sharedRow.style.display='none';
-  const sharedSplit=document.getElementById('f-shared-split-row');if(sharedSplit)sharedSplit.style.display='none';
-  const imp=document.getElementById('imp-owner');if(imp)imp.value='usuario';
-  const exp=document.getElementById('exp-owner');if(exp)exp.value='usuario';
-  updateProfileUI();
-}
-
 // ===================== INIT =====================
 (function bootFinTrack(){
   // Inicializa o Firebase imediatamente para que o botão de login já funcione.
@@ -3479,7 +3568,7 @@ function enforceSingleUserMode(){
     setLoginError('Falha ao iniciar o Firebase: '+(err?.message||err));
   }
   // Carrega o cache local em paralelo, sem bloquear a autenticação.
-  loadAll().then(()=>{enforceSingleUserMode();populateAllSelects()}).catch(err=>console.error('Falha ao carregar cache local:',err));
+  loadAll().then(()=>populateAllSelects()).catch(err=>console.error('Falha ao carregar cache local:',err));
   const form=document.getElementById('firebase-login-form');
   if(form){
     form.addEventListener('submit',loginWithFirebase);
