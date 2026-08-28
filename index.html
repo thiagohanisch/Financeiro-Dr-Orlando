@@ -259,7 +259,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="lock-card">
     <div class="lock-logo">💰</div>
     <div class="lock-title">FinTrack</div>
-    <div class="lock-sub" id="lock-sub">Entre com sua conta autorizada · V12 Orlando</div>
+    <div class="lock-sub" id="lock-sub">Entre com sua conta autorizada · V13 Orlando</div>
     <form id="firebase-login-form" onsubmit="loginWithFirebase(event)">
       <input class="form-input" id="login-email" type="email" autocomplete="username" placeholder="E-mail" required style="margin-bottom:10px;padding:12px 14px">
       <input class="form-input" id="login-password" type="password" autocomplete="current-password" placeholder="Senha" required style="padding:12px 14px">
@@ -1104,7 +1104,7 @@ const EXPECTED_FIREBASE_PROJECT_ID='planilha-financeira-orlando';
 const EXPECTED_DATABASE_URL='https://planilha-financeira-orlando-default-rtdb.firebaseio.com/';
 const ORLANDO_AUTH_EMAIL='orlando20003am@gmail.com';
 const ORLANDO_AUTH_UID='cGxAW4FrEXUklphYlJDxQVxuFyB3';
-const FIREBASE_APP_NAME='fintrack-orlando-v12';
+const FIREBASE_APP_NAME='fintrack-orlando-v13';
 
 const FIREBASE_CONFIG={
   // IMPORTANTE: use SOMENTE os 3 valores do App Web criado dentro do projeto
@@ -1323,6 +1323,44 @@ async function saveDBAndSync(db){
 function scheduleAutoSync(){/* V9: sem fila persistente/auto-reenvio */}
 async function autoSyncToCloud(){return true}
 function scheduleCloudRecovery(){/* V9: reconexão é tratada pela próxima leitura/gravação */}
+
+// ===================== HELPERS BASE (V13) =====================
+// Funções fundamentais restauradas. A remoção acidental deste bloco nas versões V9-V12
+// causava o erro `populateMonthSelect is not defined` logo após o login.
+function allCats(){const c=loadCats();return[...c.expense,...c.income]}
+function getCat(id){return allCats().find(c=>c.id===id)||{name:id||'—',icon:'📦',color:'#888'}}
+function slugify(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'').substring(0,30)}
+function randomColor(){const p=['#f87171','#fb923c','#fbbf24','#34d399','#60a5fa','#a78bfa','#f472b6','#38bdf8','#22d3a0','#c084fc'];return p[Math.floor(Math.random()*p.length)]}
+
+const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const MONTHS_SHORT=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+function fmt(v){return 'R$ '+Math.abs(Number(v)||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
+
+function getYears(){
+  const db=loadDB(),now=new Date().getFullYear(),ys=new Set([now]);
+  db.transactions.forEach(t=>{const d=new Date(t.date+'T12:00');if(!Number.isNaN(d.getTime()))ys.add(d.getFullYear())});
+  return[...ys].sort((a,b)=>b-a);
+}
+function populateMonthSelect(id,cur){
+  const sel=document.getElementById(id);if(!sel)return;
+  const previous=sel.value;
+  const includeAll=id.startsWith('tx-')||id==='exp-month';
+  sel.innerHTML=(includeAll?'<option value="-1">Todos os meses</option>':'')+MONTHS.map((m,i)=>`<option value="${i}">${m}</option>`).join('');
+  if(previous!==''&&[...sel.options].some(o=>o.value===String(previous)))sel.value=String(previous);
+  else sel.value=String(cur);
+}
+function populateYearSelect(id,cur){
+  const sel=document.getElementById(id);if(!sel)return;
+  const previous=sel.value;
+  const years=getYears();
+  const previousYear=parseInt(previous);
+  const preferred=Number.isFinite(previousYear)&&years.includes(previousYear)?previousYear:(years.includes(cur)?cur:years[0]);
+  sel.innerHTML=years.map(y=>`<option value="${y}">${y}</option>`).join('');
+  if(preferred!==undefined)sel.value=String(preferred);
+}
+function filterTx(txs,month,year){
+  return (Array.isArray(txs)?txs:[]).filter(t=>{const d=new Date(t.date+'T12:00');return !Number.isNaN(d.getTime())&&d.getFullYear()===year&&(month===-1||d.getMonth()===month)});
+}
 
 // ===================== CHARTS =====================
 let chartMonthly=null,chartPie=null,chartCatPie=null,chartAnual=null,chartCatAnual=null,chartEvolucao=null,chartAcumulado=null,chartInsCat=null;
